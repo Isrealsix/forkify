@@ -19,7 +19,7 @@ const timeout = function (s) {
 
 // https://forkify-api.herokuapp.com/v2
 
-///////////////////////////////////////
+/////////////////////////////////////
 
 const controlRecipes = async function () {
   try {
@@ -51,7 +51,7 @@ const controlSearchResults = async function () {
 
     // Render search results
     console.log(model.state.search.results);
-    resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResults(1));
   } catch (error) {
     console.log(error);
   }
