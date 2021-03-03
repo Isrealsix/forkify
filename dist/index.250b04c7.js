@@ -540,8 +540,15 @@ const controlPagination = function (goToPage) {
   // Render initial pagination buttons
   _viewsPaginationViewJsDefault.default.render(_modelJs.state.search);
 };
+const controlServings = function (newServings) {
+  // Update the recipe servings (in state)
+  _modelJs.updateServings(newServings);
+  // Update the recipe view
+  _viewsRecipeViewJsDefault.default.render(_modelJs.state.recipe);
+};
 const init = function () {
   _viewsRecipeViewJsDefault.default.addHandlerRender(controlRecipes);
+  _viewsRecipeViewJsDefault.default.addHandlerUpdateServings(controlServings);
   _viewsSearchViewJsDefault.default.addHandlerSearch(controlSearchResults);
   _viewsPaginationViewJsDefault.default.addHandlerClick(controlPagination);
 };
@@ -561,6 +568,9 @@ _parcelHelpers.export(exports, "loadSearchResults", function () {
 });
 _parcelHelpers.export(exports, "getSearchResults", function () {
   return getSearchResults;
+});
+_parcelHelpers.export(exports, "updateServings", function () {
+  return updateServings;
 });
 var _configJs = require('./config.js');
 var _helpersJs = require('./helpers.js');
@@ -615,6 +625,13 @@ const getSearchResults = function (page = state.search.page) {
   const end = page * state.search.resPerPage;
   console.log(start, end);
   return state.search.results.slice(start, end);
+};
+const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    // newQt = oldQt * newServings / oldServings
+    ing.quantity = ing.quantity * newServings / state.recipe.servings;
+  });
+  state.recipe.servings = newServings;
 };
 
 },{"./config.js":"6pr2F","./helpers.js":"581KF","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"6pr2F":[function(require,module,exports) {
@@ -715,6 +732,14 @@ class RecipeView extends _ViewsJsDefault.default {
   addHandlerRender(handler) {
     ['load', 'hashchange'].forEach(ev => window.addEventListener(ev, handler));
   }
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const {goTo} = btn.dataset;
+      if (+goTo > 0) handler(+goTo);
+    });
+  }
   _generateMarkup() {
     return `
     <figure class="recipe__fig">
@@ -740,12 +765,12 @@ class RecipeView extends _ViewsJsDefault.default {
         <span class="recipe__info-text">servings</span>
 
         <div class="recipe__info-buttons">
-          <button class="btn--tiny btn--increase-servings">
+          <button class="btn--tiny btn--update-servings" data-go-To="${this._data.servings - 1}">
             <svg>
               <use href="${_urlImgIconsSvgDefault.default}#icon-minus-circle"></use>
             </svg>
           </button>
-          <button class="btn--tiny btn--increase-servings">
+          <button class="btn--tiny btn--update-servings" data-go-To="${this._data.servings + 1}">
             <svg>
               <use href="${_urlImgIconsSvgDefault.default}#icon-plus-circle"></use>
             </svg>
@@ -13392,6 +13417,6 @@ class PaginationView extends _ViewsJsDefault.default {
 }
 exports.default = new PaginationView();
 
-},{"./Views.js":"2FHmx","url:../../img/icons.svg":"5usAu","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","../model":"1hp6y"}]},["5KYk0","45IGY","3miIZ"], "3miIZ", "parcelRequirefade")
+},{"./Views.js":"2FHmx","url:../../img/icons.svg":"5usAu","../model":"1hp6y","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["5KYk0","45IGY","3miIZ"], "3miIZ", "parcelRequirefade")
 
 //# sourceMappingURL=index.250b04c7.js.map
